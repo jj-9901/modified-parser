@@ -201,6 +201,9 @@ import { groupLinesIntoSections } from "lib/parse-resume-from-pdf/group-lines-in
 import { extractResumeFromSections } from "lib/parse-resume-from-pdf/extract-resume-from-sections";
 import type { TextItems } from "lib/parse-resume-from-pdf/types";
 
+// API URL - change localhost to your Vercel URL
+const API_URL = "https://resume-parser-seven-liard.vercel.app";
+
 export default function ResumeParser() {
   const [resume, setResume] = useState<any>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
@@ -226,24 +229,24 @@ export default function ResumeParser() {
         setFileUrl(objectUrl);
         setPdfPreviewUrl(objectUrl);
 
-        // Optional: upload to Flask
+        // Upload to Vercel API
         const formData = new FormData();
         formData.append("file", new File([blob], "resume.pdf", { type: "application/pdf" }));
 
         try {
-          const res = await fetch("http://localhost:5000/upload", {
+          const res = await fetch(`${API_URL}/upload`, {
             method: "POST",
             body: formData,
           });
           const data = await res.json();
-          console.log("Uploaded to Flask:", data);
+          console.log("Uploaded to API:", data);
           
-          // If Flask returns a file URL, use that for parsing but keep the blob URL for preview
+          // If API returns a file URL, use that for parsing but keep the blob URL for preview
           if (data.file_url) {
             setFileUrl(data.file_url);
           }
         } catch (error) {
-          console.error("Upload to Flask failed:", error);
+          console.error("Upload to API failed:", error);
         }
       } catch (error) {
         console.error("Error processing file:", error);
@@ -266,9 +269,9 @@ export default function ResumeParser() {
         const resumeData = extractResumeFromSections(sections);
         setResume(resumeData);
                 
-        // Send the parsed data to the API if you want to access it via API
+        // Send the parsed data to the API
         try {
-          await fetch("http://localhost:5000/parse", {
+          await fetch(`${API_URL}/parse`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -311,4 +314,3 @@ export default function ResumeParser() {
     </div>
   );
 }
-
