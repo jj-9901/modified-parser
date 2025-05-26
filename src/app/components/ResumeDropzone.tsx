@@ -219,6 +219,9 @@ import addPdfSrc from "public/assets/add-pdf.svg";
 import Image from "next/image";
 import { cx } from "lib/cx";
 
+// API URL - change localhost to your Vercel URL
+const API_URL = "https://resume-parser-seven-liard.vercel.app";
+
 const defaultFileState = {
   name: "",
   size: 0,
@@ -246,7 +249,7 @@ export const ResumeDropzone = ({
     setUploading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/upload", {
+      const response = await fetch(`${API_URL}/upload`, {
         method: "POST",
         body: formData,
       });
