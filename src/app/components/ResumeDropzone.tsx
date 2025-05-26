@@ -220,7 +220,7 @@ import Image from "next/image";
 import { cx } from "lib/cx";
 
 // API URL - change localhost to your Vercel URL
-const API_URL = "https://resume-parser-seven-liard.vercel.app";
+const API_URL = https://resume-parser-seven-liard.vercel.app;
 
 const defaultFileState = {
   name: "",
