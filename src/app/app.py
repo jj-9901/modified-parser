@@ -57,19 +57,31 @@ def api_docs():
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
-    if "file" not in request.files:
-        return jsonify({"error": "No file part"}), 400
-    file = request.files["file"]
-    if file.filename == "":
-        return jsonify({"error": "No selected file"}), 400
+    try:
+        if "file" not in request.files:
+            return jsonify({"error": "No file part"}), 400
+        file = request.files["file"]
+        if file.filename == "":
+            return jsonify({"error": "No selected file"}), 400
 
-    filename = secure_filename(file.filename)
-    file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-    file.save(file_path)
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        
+        # Debug info
+        print(f"Upload folder: {app.config['UPLOAD_FOLDER']}")
+        print(f"File path: {file_path}")
+        
+        # Check if directory exists, create if not
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        
+        file.save(file_path)
 
-    # Return the file URL to access it - use dynamic base URL
-    file_url = f"{get_base_url()}/uploads/{filename}"
-    return jsonify({"file_url": file_url})
+        # Return the file URL to access it - use dynamic base URL
+        file_url = f"{get_base_url()}/uploads/{filename}"
+        return jsonify({"file_url": file_url})
+    except Exception as e:
+        print(f"Upload error: {str(e)}")
+        return jsonify({"error": f"Failed to upload: {str(e)}"}), 500
 
 @app.route("/uploads/<filename>")
 def uploaded_file(filename):
